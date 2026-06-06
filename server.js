@@ -15,7 +15,7 @@ const allowedOrigins = [
   "http://localhost:5173"
 ];
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -25,10 +25,15 @@ app.use(cors({
   },
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"],
-}));
+};
 
-app.options("*", cors());
+app.use(cors(corsOptions));
+app.options("/api/upload-session", cors(corsOptions));
 app.use(express.json({ limit: "1mb" }));
+
+app.get("/", (req, res) => {
+  res.json({ ok: true, message: "API is running" });
+});
 
 app.post("/api/upload-session", (req, res) => {
   try {
