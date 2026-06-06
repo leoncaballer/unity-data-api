@@ -7,13 +7,14 @@ import path from 'path';
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const API_KEY = process.env.API_KEY || '';
+const DATA_DIR = process.env.DATA_DIR || '/var/data';
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
   .map(s => s.trim())
   .filter(Boolean);
 
-const dataDir = path.resolve('./data');
+const dataDir = path.resolve(DATA_DIR);
 const dataFile = path.join(dataDir, 'sessions.jsonl');
 
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
@@ -22,7 +23,7 @@ if (!fs.existsSync(dataFile)) fs.writeFileSync(dataFile, '', 'utf8');
 app.use(cors({
   origin(origin, callback) {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) return callback(null, true);
     return callback(new Error('CORS origin not allowed'));
   },
   methods: ['GET', 'POST', 'OPTIONS'],
@@ -52,10 +53,10 @@ app.post('/api/upload-session', (req, res) => {
   };
 
   fs.appendFileSync(dataFile, JSON.stringify(record) + '\n', 'utf8');
-
   res.status(201).json({ ok: true, message: 'session saved' });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Saving data to ${dataFile}`);
 });
