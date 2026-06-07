@@ -10,6 +10,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 const allowedOrigins = [
+  "https://f003.backblazeb2.com",
+  "https://game.mtvreginald.com",
   "https://html-classic.itch.zone",
   "http://localhost:3000",
   "http://localhost:5173"
